@@ -1,2 +1,2 @@
-from .dashboard import DashboardData
-from .dashboard import getDashboardInput
+from .user_input import DashboardData
+from .user_input import getDashboardInput
