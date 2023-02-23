@@ -6,31 +6,36 @@ PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX travelregion: <http://cit.tum.de/ressource/travelkg/region/>
+PREFIX schema: <http://schema.org/>
 
 CONSTRUCT {
 
-    ?regioniri a rdf:Class ;
-        rdfs:label ?c_Region ;
-        a dbo:Region ;
+    ?regionIRI rdfs:label ?c_Region ;
         a dbo:Place ;
-        dbo:subregion ?parentRegionIRI ;
-        travelkg:safetyRating ?safetyRatingIRI ;
-        travelkg:timeTo75Utility ?timeTo75UtilityIRI ;
-        travelkg:timeTo25Utility ?timeTo25UtilityIRI ;
-        travelkg:avgCostPerWeek ?avgCostPerWeekIRI ;
+        a dbo:PopulatedPlace ;
+        a schema:Place .
+
+    ?regionIRI dbo:subregion ?parentRegionIRI ;
+        travelkg:safetyRating ?o_SafetyRating ;
+        travelkg:timeTo75Utility ?o_timeTo75Utility ;
+        travelkg:timeTo25Utility ?o_timeTo25Utility ;
+        travelkg:avgCostPerWeek ?o_AvgCostPerWeek ;
+
         travelkg:januaryRating ?januaryRatingIRI ;
         travelkg:februaryRating ?februaryRatingIRI ;
         travelkg:marchRating ?marchRatingIRI ;
         travelkg:aprilRating ?aprilRatingIRI ;
         travelkg:mayRating ?mayRatingIRI ;
         travelkg:juneRating ?juneRatingIRI ;
-        travelkg:julyating ?julyRatingIRI ;
+        travelkg:julyRating ?julyRatingIRI ;
         travelkg:augustRating ?augustRatingIRI ;
         travelkg:septemberRating ?septemberRatingIRI ;
         travelkg:octoberRating ?octoberRatingIRI ;
         travelkg:novemberRating ?novemberRatingIRI ;
         travelkg:decemberRating ?decemberRatingIRI ;
-        travelkg:natureWildlifeRating ?natureWildlifeRatingIRI ;
+        
+        travelkg:natureRating ?natureWildlifeRatingIRI ;
+        travelkg:hikingRating ?hikingRatingIRI ;
         travelkg:beachRating ?beachRatingIRI ;
         travelkg:waterSportsRating ?waterSportsRatingIRI ;
         travelkg:entertainmentRating ?entertainmentRatingIRI ;
@@ -39,120 +44,100 @@ CONSTRUCT {
         travelkg:culinaryRating ?culinaryRatingIRI ;
         travelkg:citiesArchitectureRating ?citiesArchitectureRatingIRI .
 
+    # assign labels as string or number
+    ?januaryRatingIRI rdfs:label ?o_January .
+    ?februaryRatingIRI rdfs:label ?o_February .
+    ?marchRatingIRI rdfs:label ?o_March .
+    ?aprilRatingIRI rdfs:label ?o_April .
+    ?mayRatingIRI rdfs:label ?o_May .
+    ?juneRatingIRI rdfs:label ?o_June .
+    ?julyRatingIRI rdfs:label ?o_July .
+    ?augustRatingIRI rdfs:label ?o_August .
+    ?septemberRatingIRI rdfs:label ?o_September .
+    ?decemberRatingIRI rdfs:label ?o_December .
+    # label the resources
+    ?natureWildlifeRatingIRI rdfs:label ?o_Nature_wildlife .
+    ?hikingRatingIRI rdfs:label ?o_Hiking .
+    ?beachRatingIRI rdfs:label ?o_Beach .
+    ?waterSportsRatingIRI rdfs:label ?o_Water_sports.
+    ?entertainmentRatingIRI rdfs:label ?o_Entertainment .
+    ?winterSportsRatingIRI rdfs:label ?o_Winter_sports .
+    ?cultureRatingIRI rdfs:label ?o_Culture .
+    ?culinaryRatingIRI rdfs:label ?o_Culinary_arts .
+    ?citiesArchitectureRatingIRI rdfs:label ?o_Cities_architecture .
 
-    ?avgCostPerWeekIRI rdfs:label ?o_AvgCostPerWeek .
-    ?safetyRatingIRI rdfs:label ?o_SafetyRating .
-    ?timeTo75UtilityIRI rdfs:label ?o_timeTo75Utility .
-    ?timeTo25UtilityIRI rdfs:label ?o_timeTo25Utility .
+    travelkg:LikertRating rdfs:subClassOf schema:Rating ;
+        schema:worstRating 1 ;
+        schema:bestRating 5 .
 
-    ?januaryRatingIRI rdfs:label ?o_januaryRating .
-    ?februaryRatingIRI rdfs:label ?o_februaryRating .
-    ?marchRatingIRI rdfs:label ?o_marchRating .
-    ?aprilRatingIRI rdfs:label ?o_aprilRating .
-    ?mayRatingIRI rdfs:label ?o_mayRating .
-    ?juneRatingIRI rdfs:label ?o_juneRating .
-    ?julyRatingIRI rdfs:label ?o_julyRating .
-    ?augustRatingIRI rdfs:label ?o_augustRating .
-    ?septemberRatingIRI rdfs:label ?o_septemberRating .
-    ?decemberRatingIRI rdfs:label ?o_decemberRating .
+    travelkg:monthlyRating a rdf:Property ;
+        a schema:ratingValue ;
+        rdfs:comment "Rating on how good it is to visit for a specific month (1-5)."@en ;
+        rdfs:range travelkg:LikertRating .
 
     travelkg:safetyRating a rdf:Property ;
-        rdfs:comment "Safety rating."@en ;
-        rdfs:range xsd:nonNegativeInteger ;
+        a schema:ratingValue ;
+        rdfs:comment"Safety from crime."@en ;
+        rdfs:range travelkg:LikertRating .
+
     travelkg:timeTo25Utility a rdf:Property ;
-        rdfs:comment "Time it takes to reach a utility level of 25 %."@en ;
-        rdfs:range xsd:nonNegativeInteger ;
+        rdfs:comment "Time in weeks it takes to reach a utility level of 25 %."@en ;
+        rdfs:range xsd:nonNegativeInteger .
+
     travelkg:timeTo75Utility a rdf:Property ;
-        rdfs:comment "The time it takes to reach a utility level of 75 %."@en ;
-        rdfs:range xsd:nonNegativeInteger ;
+        rdfs:comment "Time in weeks it takes to reach a utility level of 75 %."@en ;
+        rdfs:range xsd:nonNegativeInteger .
+
     travelkg:avgCostPerWeek a rdf:Property ;
         rdfs:comment "Average cost per week."@en ;
-        rdfs:range xsd:nonNegativeInteger ;
-
-    travelkg:januaryRating a rdf:Property ;
-        rdfs:label "januaryRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:februaryRating a rdf:Property ;
-        rdfs:label "februaryRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:marchRating a rdf:Property ;
-        rdfs:label "marchRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:aprilRating a rdf:Property ;
-        rdfs:label "aprilRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:mayRating a rdf:Property ;
-        rdfs:label "mayRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:juneRating a rdf:Property ;
-        rdfs:label "juneRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:julyRating a rdf:Property ;
-        rdfs:label "julyRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:augustRating a rdf:Property ;
-        rdfs:label "augustRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:septemberRating a rdf:Property ;
-        rdfs:label "septemberRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:octoberRating a rdf:Property ;
-        rdfs:label "octoberRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:novemberRating a rdf:Property ;
-        rdfs:label "novemberRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:decemberRating a rdf:Property ;
-        rdfs:label "decemberRating" ;
-        rdfs:comment "How good it is to visit the region in that month. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
         rdfs:range xsd:nonNegativeInteger .
 
-    travelkg:natureWildlifeRating a rdf:Property ;
-        rdfs:label "Nature and wildlife rating" ;
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+    travelkg:januaryRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:februaryRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:marchRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:aprilRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:mayRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:juneRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:julyRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:augustRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:septemberRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:octoberRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:novemberRating rdfs:subPropertyOf travelkg:monthlyRating .
+    travelkg:decemberRating rdfs:subPropertyOf travelkg:monthlyRating .
+
+    travelkg:natureRating a rdf:Property ;
+        rdfs:comment "How well it is suited for nature and wildlife."@en ;
+        rdfs:range travelkg:LikertRating .
+    travelkg:hikingRating a rdf:Property ;
+        rdfs:comment "How well it is suited for hiking."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:beachRating a rdf:Property ;
-        rdfs:label "Beach rating" ;
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment "How well it is suited for beach."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:waterSportsRating a rdf:Property ;
-        rdfs:label "Water sports rating" ;
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
-    travelkg:entertainmentRating a rdf:Property ;
-        rdfs:label "Entertainment rating";
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment  "How well it is suited for water sports."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:winterSportsRating a rdf:Property ;
-        rdfs:label "Winter sports rating";
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment  "How well it is suited for winter sports."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:cultureRating a rdf:Property ;
-        rdfs:label "Culture rating";
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment  "How well it is suited for culture."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:culinaryRating a rdf:Property ;
-        rdfs:label "Culinary rating";
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment  "How well it is suited for culinary."@en ;
+        rdfs:range travelkg:LikertRating .
     travelkg:citiesArchitectureRating a rdf:Property ;
-        rdfs:label "Cities and architecture rating";
-        rdfs:comment "How well that region is suited for that activity. Rating goes 1 (very poor) - 4 (average) - 7 (excellent)."@en ;
-        rdfs:range xsd:nonNegativeInteger .
+        rdfs:comment  "How well it is suited for cities and architecture."@en ;
+        rdfs:range travelkg:LikertRating .
+    travelkg:entertainmentRating a rdf:Property ;
+        rdfs:comment  "How well it is suited for entertainment."@en ;
+        rdfs:range travelkg:LikertRating .
+    travelkg:shoppingRating a rdf:Property ;
+        rdfs:comment  "How well it is suited for shopping."@en ;
+        rdfs:range travelkg:LikertRating .
 
 } WHERE {
-    SERVICE <http://localhost:7333/repositories/ontorefine:2455530186488> {
+    SERVICE <http://localhost:7333/repositories/ontorefine:2146414991628> {
         # Columns as variables:
         #   ?c_Column, ?c_Parent_region, ?c_Region, ?c_SQL_unique_name, ?c_Time_to_75__percentage_daily_utility_in_weeks,
         #   ?c_Time_to_25__percentage_daily_utility_in_weeks, ?c_Avg_cost_per_week,
@@ -164,10 +149,6 @@ CONSTRUCT {
         # Metadata as variables:
         #   ?row_index, ?record_id
 
-        (?row_index "\"safety/\" + cells[\"Safety from crime\"].value") mapper:grel ?o_safetyRating_grel .
-        (?row_index "\"timeTo75Utility/\" + cells[\"Time_to_75__percentage_daily_utility_in_weeks\"].value") mapper:grel ?o_timeTo75Utility_grel .
-        (?row_index "\"timeTo25Utility/\" + cells[\"Time_to_25__percentage_daily_utility_in_weeks\"].value") mapper:grel ?o_timeTo25Utility_grel .
-        (?row_index "\"avgCostPerWeek/\" + cells[\"Avg_cost_per_week\"].value") mapper:grel ?o_avgCostPerWeek_grel .
         (?row_index "\"monthlyRating/january/\" + cells[\"January\"].value") mapper:grel ?o_januaryRating_grel .
         (?row_index "\"monthlyRating/february/\" + cells[\"February\"].value") mapper:grel ?o_februaryRating_grel .
         (?row_index "\"monthlyRating/march/\" + cells[\"March\"].value") mapper:grel ?o_marchRating_grel .
@@ -194,40 +175,36 @@ CONSTRUCT {
 
         BIND(STRDT(?c_Avg_cost_per_week, xsd:nonNegativeInteger) as ?o_AvgCostPerWeek)
         BIND(STRDT(?c_Safety_from_crime, xsd:nonNegativeInteger) as ?o_SafetyRating)
-        BIND(STRDT(?c_Time_to_75__percentage_daily_utility_in_weeks, xsd:positiveInteger) as ?o_timeTo75Utility)
-        BIND(STRDT(?c_Time_to_25__percentage_daily_utility_in_weeks, xsd:positiveInteger) as ?o_timeTo25Utility)
-        BIND(STRDT(?c_January, xsd:nonNegativeInteger) as ?o_januaryRating)
-        BIND(STRDT(?c_February, xsd:nonNegativeInteger) as ?o_februaryRating)
-        BIND(STRDT(?c_March, xsd:nonNegativeInteger) as ?o_marchRating)
-        BIND(STRDT(?c_April, xsd:nonNegativeInteger) as ?o_aprilRating)
-        BIND(STRDT(?c_May, xsd:nonNegativeInteger) as ?o_mayRating)
-        BIND(STRDT(?c_June, xsd:nonNegativeInteger) as ?o_juneRating)
-        BIND(STRDT(?c_July, xsd:nonNegativeInteger) as ?o_julyRating)
-        BIND(STRDT(?c_August, xsd:nonNegativeInteger) as ?o_augustRating)
-        BIND(STRDT(?c_September, xsd:nonNegativeInteger) as ?o_septemberRating)
-        BIND(STRDT(?c_October, xsd:nonNegativeInteger) as ?o_octoberRating)
-        BIND(STRDT(?c_November, xsd:nonNegativeInteger) as ?o_novemberRating)
-        BIND(STRDT(?c_December, xsd:nonNegativeInteger) as ?o_decemberRating)
-        BIND(STRDT(?c_Nature_wildlife, xsd:nonNegativeInteger) as ?o_natureWildlifeRating)
-        BIND(STRDT(?c_Hiking, xsd:nonNegativeInteger) as ?o_hikingRating)
-        BIND(STRDT(?c_Beach, xsd:nonNegativeInteger) as ?o_beachRating)
-        BIND(STRDT(?c_Water_sports, xsd:nonNegativeInteger) as ?o_waterSportsRating)
-        BIND(STRDT(?c_Entertainment, xsd:nonNegativeInteger) as ?o_entertainmentRating)
-        BIND(STRDT(?c_Winter_sports, xsd:nonNegativeInteger) as ?o_winterSportsRating)
-        BIND(STRDT(?c_Culture, xsd:nonNegativeInteger) as ?o_cultureRating)
-        BIND(STRDT(?c_Culinary_arts, xsd:nonNegativeInteger) as ?o_culinaryRating)
-        BIND(STRDT(?c_Cities_architecture, xsd:nonNegativeInteger) as ?o_citiesArchitectureRating)
-        BIND(STRDT(?c_Shopping, xsd:nonNegativeInteger) as ?o_shoppingRating)
+        BIND(STRDT(?c_Time_to_75__percentage_daily_utility_in_weeks, xsd:nonNegativeInteger) as ?o_timeTo75Utility)
+        BIND(STRDT(?c_Time_to_25__percentage_daily_utility_in_weeks, xsd:nonNegativeInteger) as ?o_timeTo25Utility)
+        BIND(STRDT(?c_January, xsd:nonNegativeInteger) as ?o_January)
+        BIND(STRDT(?c_February, xsd:nonNegativeInteger) as ?o_February)
+        BIND(STRDT(?c_March, xsd:nonNegativeInteger) as ?o_March)
+        BIND(STRDT(?c_April, xsd:nonNegativeInteger) as ?o_April)
+        BIND(STRDT(?c_May, xsd:nonNegativeInteger) as ?o_May)
+        BIND(STRDT(?c_June, xsd:nonNegativeInteger) as ?o_June)
+        BIND(STRDT(?c_July, xsd:nonNegativeInteger) as ?o_July)
+        BIND(STRDT(?c_August, xsd:nonNegativeInteger) as ?o_August)
+        BIND(STRDT(?c_September, xsd:nonNegativeInteger) as ?o_September)
+        BIND(STRDT(?c_October, xsd:nonNegativeInteger) as ?o_October)
+        BIND(STRDT(?c_November, xsd:nonNegativeInteger) as ?o_November)
+        BIND(STRDT(?c_December, xsd:nonNegativeInteger) as ?o_December)
+        BIND(STRDT(?c_Nature_wildlife, xsd:nonNegativeInteger) as ?o_Nature_wildlife)
+        BIND(STRDT(?c_Hiking, xsd:nonNegativeInteger) as ?o_Hiking)
+        BIND(STRDT(?c_Beach, xsd:nonNegativeInteger) as ?o_Beach)
+        BIND(STRDT(?c_Water_sports, xsd:nonNegativeInteger) as ?o_Water_sports)
+        BIND(STRDT(?c_Entertainment, xsd:nonNegativeInteger) as ?o_Entertainment)
+        BIND(STRDT(?c_Winter_sports, xsd:nonNegativeInteger) as ?o_Winter_sports)
+        BIND(STRDT(?c_Culture, xsd:nonNegativeInteger) as ?o_Culture)
+        BIND(STRDT(?c_Culinary_arts, xsd:nonNegativeInteger) as ?o_Culinary_arts)
+        BIND(STRDT(?c_Cities_architecture, xsd:nonNegativeInteger) as ?o_Cities_architecture)
+        BIND(STRDT(?c_Shopping, xsd:nonNegativeInteger) as ?o_Shopping)
 
-        # IRI mappings
-        BIND(IRI(mapper:encode_iri(travelregion:, ?c_Region)) as ?regioniri)
+        ## IRI mappings
+        BIND(IRI(mapper:encode_iri(travelregion:, ?c_Region)) as ?regionIRI)
         BIND(IRI(mapper:encode_iri(travelregion:, ?c_Parent_region)) as ?parentRegionIRI)
-        BIND(IRI(mapper:encode_iri(?o_avgCostPerWeek_grel)) as ?avgCostPerWeekIRI)
-        BIND(IRI(mapper:encode_iri(?o_safetyRating_grel)) as ?safetyRatingIRI)
-        BIND(IRI(mapper:encode_iri(?o_timeTo75Utility_grel)) as ?timeTo75UtilityIRI)
-        BIND(IRI(mapper:encode_iri(?o_timeTo25Utility_grel)) as ?timeTo25UtilityIRI)
 
-        # Monthly ratings
+        ## Monthly ratings
         BIND(IRI(mapper:encode_iri(?o_januaryRating_grel)) as ?januaryRatingIRI)
         BIND(IRI(mapper:encode_iri(?o_februaryRating_grel)) as ?februaryRatingIRI)
         BIND(IRI(mapper:encode_iri(?o_marchRating_grel)) as ?marchRatingIRI)
@@ -241,7 +218,7 @@ CONSTRUCT {
         BIND(IRI(mapper:encode_iri(?o_novemberRating_grel)) as ?novemberRatingIRI)
         BIND(IRI(mapper:encode_iri(?o_decemberRating_grel)) as ?decemberRatingIRI)
 
-        # Activity ratings
+        ## Activity ratings
         BIND(IRI(mapper:encode_iri(?o_natureWildlifeRating_grel)) as ?natureWildlifeRatingIRI)
         BIND(IRI(mapper:encode_iri(?o_hikingRating_grel)) as ?hikingRatingIRI)
         BIND(IRI(mapper:encode_iri(?o_beachRating_grel)) as ?beachRatingIRI)
