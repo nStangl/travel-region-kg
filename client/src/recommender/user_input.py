@@ -1,6 +1,5 @@
 import ipywidgets as widgets
 from dataclasses import dataclass
-from datetime import date
 
 _preferences1 = ["nature", "hiking", "beach", "culture", "entertainment"]
 
@@ -12,7 +11,7 @@ _region_descriptions = ["Europe", "North_America", "South_America",
                         "Oceania"]
 
 budget_widget = widgets.BoundedIntText(
-    value=4000,
+    value=2000,
     min=0,
     max=100000,
     step=100,
@@ -20,13 +19,6 @@ budget_widget = widgets.BoundedIntText(
     disabled=False,
     indent=False,
     style=dict(description_width="initial")
-)
-
-start_at_widget = widgets.DatePicker(
-    description='Start at',
-    value=date.today(),
-    disabled=False,
-    indent=False
 )
 
 max_num_days_widget = widgets.BoundedIntText(
@@ -44,8 +36,9 @@ select_month_widget = widgets.Dropdown(
     options=["january", "february", "march", "april", "may",
              "june", "july", "august", "september", "december"],
     value="january",
-    description="Month:",
-    disabled=False
+    description="Month of visit:",
+    disabled=False,
+    style=dict(description_width="initial")
 )
 
 regions_box = widgets.HBox(
@@ -64,8 +57,8 @@ preferences_box2 = widgets.HBox(
         for desc in _preferences2])
 
 dashboard = widgets.VBox([
-    widgets.HBox([budget_widget, select_month_widget]),
-    widgets.HBox([start_at_widget, max_num_days_widget]),
+    widgets.Box([widgets.Label("Input your constraints:")]),
+    widgets.HBox([budget_widget, select_month_widget, max_num_days_widget]),
     widgets.Box([widgets.Label("Select the regions you want to visit:")]),
     regions_box,
     widgets.Box([widgets.Label("Select your preferences:")]),
@@ -78,7 +71,6 @@ dashboard = widgets.VBox([
 class DashboardData():
     budget: int
     month: str
-    startAt: date
     maxDays: int
     regions: dict()
     preferences: dict()
@@ -97,8 +89,7 @@ def getDashboardInput():
         preferences[check.description] = check.value
 
     return DashboardData(budget_widget.value, select_month_widget.value,
-                         start_at_widget.value, max_num_days_widget.value,
-                         regions, preferences)
+                         max_num_days_widget.value, regions, preferences)
 
 
 # Example Query

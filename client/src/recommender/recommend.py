@@ -109,10 +109,8 @@ def calculateDaysScore(n):
 
 
 def displayRegion(rank, region, score, staytime, avgCostPerWeek):
-    region = f"""**Destination {rank}: {region}**
-
-----------
-
+    region = f"""-----
+**Destination {rank}: {region}**
 | Score | Maximum Staytime | Average Cost Per Week |
 |:------|:------------------|:----------------------|
 |{score} % |{staytime} days | {avgCostPerWeek}    |
@@ -132,7 +130,7 @@ def displayRecommendations(df: pd.DataFrame):
 ---
 """
     for index, row in df.iterrows():
-        output += displayRegion(rank, prettyPrintRegion(row['region']),
+        output += displayRegion(rank, prettyPrintRegion(row['region']).strip(),
                                 row['score'], row['numberOfDays'], 400)
         output += "\n"
         rank += 1
