@@ -1,16 +1,15 @@
 import ipywidgets as widgets
-from ipywidgets import Checkbox
 from dataclasses import dataclass
 from datetime import date
 
-_preferences1 = ["Nature & Wildlife", "Hiking",
-                 "Beach", "Culture", "Entertainment"]
+_preferences1 = ["nature", "hiking", "beach", "culture", "entertainment"]
 
-_preferences2 = ["Cities & Architecture", "Wintersports",
-                 "Watersports", "Culinary", "Shopping"]
+_preferences2 = ["citiesArchitecture", "winterSports",
+                 "waterSports", "culinary", "shopping"]
 
 _region_descriptions = ["Europe", "North_America", "South_America",
-                        "Middle_America_and_Carribean", "Africa", "Asia", "Oceania"]
+                        "Middle_America_and_Caribbean", "Africa", "Asia",
+                        "Oceania"]
 
 budget_widget = widgets.BoundedIntText(
     value=4000,
@@ -49,14 +48,20 @@ select_month_widget = widgets.Dropdown(
     disabled=False
 )
 
-regions_box = widgets.HBox([widgets.Checkbox(value=True, description=desc,
-                                             disabled=False, indent=False) for desc in _region_descriptions])
+regions_box = widgets.HBox(
+    [widgets.Checkbox(value=True, description=desc,
+                      disabled=False, indent=False)
+        for desc in _region_descriptions])
 
-preferences_box1 = widgets.HBox([widgets.Checkbox(value=False, description=desc,
-                                                  disabled=False, indent=False) for desc in _preferences1])
+preferences_box1 = widgets.HBox(
+    [widgets.Checkbox(value=False, description=desc,
+                      disabled=False, indent=False)
+        for desc in _preferences1])
 
-preferences_box2 = widgets.HBox([widgets.Checkbox(value=False, description=desc,
-                                                  disabled=False, indent=False) for desc in _preferences2])
+preferences_box2 = widgets.HBox(
+    [widgets.Checkbox(value=False, description=desc,
+                      disabled=False, indent=False)
+        for desc in _preferences2])
 
 dashboard = widgets.VBox([
     widgets.HBox([budget_widget, select_month_widget]),
@@ -91,8 +96,9 @@ def getDashboardInput():
     for check in preferences_box2.children:
         preferences[check.description] = check.value
 
-    return DashboardData(budget_widget.value, select_month_widget.value, start_at_widget.value,
-                  max_num_days_widget.value, regions, preferences)
+    return DashboardData(budget_widget.value, select_month_widget.value,
+                         start_at_widget.value, max_num_days_widget.value,
+                         regions, preferences)
 
 
 # Example Query

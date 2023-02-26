@@ -42,7 +42,8 @@ CONSTRUCT {
         travelkg:winterSportsRating ?winterSportsRatingIRI ;
         travelkg:cultureRating ?cultureRatingIRI ;
         travelkg:culinaryRating ?culinaryRatingIRI ;
-        travelkg:citiesArchitectureRating ?citiesArchitectureRatingIRI .
+        travelkg:citiesArchitectureRating ?citiesArchitectureRatingIRI ;
+        travelkg:shoppingRating ?shoppingRatingIRI .
 
     # assign labels as string or number
     ?januaryRatingIRI rdfs:label ?o_January .
@@ -65,6 +66,7 @@ CONSTRUCT {
     ?cultureRatingIRI rdfs:label ?o_Culture .
     ?culinaryRatingIRI rdfs:label ?o_Culinary_arts .
     ?citiesArchitectureRatingIRI rdfs:label ?o_Cities_architecture .
+    ?shoppingRatingIRI rdfs:label ?o_Shopping .
 
     travelkg:LikertRating rdfs:subClassOf schema:Rating ;
         schema:worstRating 1 ;
