@@ -56,14 +56,25 @@ preferences_box2 = widgets.HBox(
                       disabled=False, indent=False)
         for desc in _preferences2])
 
+query_button = widgets.Button(
+    description='Recommend me',
+    disabled=False,
+    button_style='info',
+    tooltip='Click me',
+    icon='',
+    layout=widgets.Layout(position='right')
+)
+
 dashboard = widgets.VBox([
+    widgets.HTML(value="<b>Travel Region Recommender</b>"),
     widgets.Box([widgets.Label("Input your constraints:")]),
     widgets.HBox([budget_widget, select_month_widget, max_num_days_widget]),
     widgets.Box([widgets.Label("Select the regions you want to visit:")]),
     regions_box,
     widgets.Box([widgets.Label("Select your preferences:")]),
     preferences_box1,
-    preferences_box2
+    preferences_box2,
+    query_button,
 ])
 
 

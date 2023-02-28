@@ -24,11 +24,12 @@ def buildQuery(data: DashboardData):
             {allowed_regions}
         }}
         ?regionIRI dbo:subregion* ?allowed_region ;
-            travelkg:avgCostPerWeek ?cost ;
-            travelkg:{data.month}Rating/rdfs:label ?monthRating ;
-            rdfs:label ?region .
+            travelkg:avgCostPerWeek ?cost .
+        FILTER NOT EXISTS {{ ?any dbo:subregion ?regionIRI }}
         FILTER(?cost*2 < ?budget)
-        ?regionIRI travelkg:natureRating/rdfs:label ?nature ;
+        ?regionIRI rdfs:label ?region ;
+            travelkg:{data.month}Rating/rdfs:label ?monthRating ;
+            travelkg:natureRating/rdfs:label ?nature ;
             travelkg:hikingRating/rdfs:label ?hiking ;
             travelkg:beachRating/rdfs:label ?beach ;
             travelkg:waterSportsRating/rdfs:label ?waterSports ;
