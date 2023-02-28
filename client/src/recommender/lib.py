@@ -1,14 +1,14 @@
-from recommender.user_input import DashboardData
 import pandas as pd
 import re
 import sys
 sys.path.append('../graphdb-client/')
+import swagger_client
 
 
-def buildQuery(data: DashboardData):
+def buildQuery(user_input):
     allowed_regions = " ".join(
         ['(travelregion:{})'.format(reg)
-         for reg, allowed in data.regions.items() if allowed]
+         for reg, allowed in user_input.regions.items() if allowed]
     )
 
     query = f"""PREFIX dbo:<http://dbpedia.org/ontology/>
@@ -19,7 +19,7 @@ def buildQuery(data: DashboardData):
     ?nature ?hiking ?beach ?waterSports ?winterSports ?entertainment ?culture
     ?culinary ?citiesArchitecture ?shopping
     WHERE {{
-        BIND ({data.budget} AS ?budget)
+        BIND ({user_input.budget} AS ?budget)
         VALUES (?allowed_region) {{
             {allowed_regions}
         }}
@@ -28,7 +28,7 @@ def buildQuery(data: DashboardData):
         FILTER NOT EXISTS {{ ?any dbo:subregion ?regionIRI }}
         FILTER(?cost*2 < ?budget)
         ?regionIRI rdfs:label ?region ;
-            travelkg:{data.month}Rating/rdfs:label ?monthRating ;
+            travelkg:{user_input.month}Rating/rdfs:label ?monthRating ;
             travelkg:natureRating/rdfs:label ?nature ;
             travelkg:hikingRating/rdfs:label ?hiking ;
             travelkg:beachRating/rdfs:label ?beach ;
@@ -47,24 +47,24 @@ def buildQuery(data: DashboardData):
 def readAPIResponse(response):
     cols = response.get('head').get('vars')
     values = response.get('results').get('bindings')
-    data = []
+    user_input = []
 
     for row in values:
         d_row = [row.get(col).get('value') for col in cols]
-        data.append(d_row)
+        user_input.append(d_row)
 
-    df = pd.DataFrame(data, columns=cols)
-    return (df, cols)
+    df = pd.DataFrame(user_input, columns=cols)
+    return df
 
 
-def rankRegions(userData: DashboardData, dataFrame: pd.DataFrame, df_cols):
+def rankRegions(user_input, dataFrame: pd.DataFrame):
     """Assign each region a rating on a scale from [0;100].
 
     Rating depends on user inputs.
     Activity prefernces are weighted (*2)
     The longer the duration of the stay, the higher the rating.
     """
-    minScore, maxScore = getMinMaxScore(userData.preferences)
+    minScore, maxScore = getMinMaxScore(user_input.preferences)
     def normalize(x): return round(
         100 * ((x - minScore) / (maxScore - minScore)))
 
@@ -72,7 +72,7 @@ def rankRegions(userData: DashboardData, dataFrame: pd.DataFrame, df_cols):
     for i in dataFrame.index:
         df_row = dataFrame.iloc[i]
         score = 0
-        for preference, selected in userData.preferences.items():
+        for preference, selected in user_input.preferences.items():
             x = int(df_row[preference]) - 3
             score += (x * 2 if selected else x)
 
@@ -84,10 +84,10 @@ def rankRegions(userData: DashboardData, dataFrame: pd.DataFrame, df_cols):
     dataFrame.insert(1, "score", scores)
 
 
-def getMinMaxScore(preferences: dict()):
+def getMinMaxScore(user_preferences):
     """Calculate highest and lowest possible score for normalization."""
-    n = len(preferences)
-    x = list(preferences.values()).count(True)
+    n = len(user_preferences)
+    x = list(user_preferences.values()).count(True)
 
     # preferences are weighted in the score (* 2), min-max scores depend
     # on number of selected preferences
@@ -109,6 +109,22 @@ def calculateDaysScore(n):
         return 5
 
 
+def displayRecommendations(df: pd.DataFrame):
+    rank = 1
+    def pretty(reg): return re.sub(r"[_]+", " ", reg).strip()
+    output = "*Recommended Travel Trips:*\n---\n"
+#    output = """*Recommended Travel Trips:*
+# ---
+# """
+    for _, row in df.iterrows():
+        output += displayRegion(rank, pretty(row['region']),
+                                row['score'], row['numberOfDays'], 400)
+        output += "\n"
+        rank += 1
+
+    return output
+
+
 def displayRegion(rank, region, score, staytime, avgCostPerWeek):
     region = f"""-----
 **Destination {rank}: {region}**
@@ -119,21 +135,19 @@ def displayRegion(rank, region, score, staytime, avgCostPerWeek):
     return region
 
 
-def prettyPrintRegion(region: str):
-    """Convert regions `USA_southwest` to `USA southwest`"""
-    regex = r"[_]+"
-    return re.sub(regex, ' ', region)
+_sparql_client = swagger_client.SparqlApi()
+
+_repository_id = 'TravelRegion'
 
 
-def displayRecommendations(df: pd.DataFrame):
-    rank = 1
-    output = """*Recommended Travel Trips:*
----
-"""
-    for index, row in df.iterrows():
-        output += displayRegion(rank, prettyPrintRegion(row['region']).strip(),
-                                row['score'], row['numberOfDays'], 400)
-        output += "\n"
-        rank += 1
+def execute(user_input):
+    query = buildQuery(user_input)
+    response = _sparql_client.execute_get_select_query(
+        _repository_id, query, query_ln='sparql', infer=True,
+        timeout=30, distinct=True, limit=0, offset=0)
 
-    return output
+    df = readAPIResponse(response)
+
+    rankRegions(user_input, df)
+    md_result = displayRecommendations(df.nlargest(10, 'score'))
+    return md_result

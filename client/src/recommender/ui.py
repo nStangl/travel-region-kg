@@ -1,14 +1,40 @@
 import ipywidgets as widgets
+from IPython.display import display, Markdown
 from dataclasses import dataclass
+from recommender.lib import execute
 
-_preferences1 = ["nature", "hiking", "beach", "culture", "entertainment"]
 
-_preferences2 = ["citiesArchitecture", "winterSports",
-                 "waterSports", "culinary", "shopping"]
+@dataclass
+class DashboardData():
+    budget: int
+    month: str
+    maxDays: int
+    regions: dict()
+    preferences: dict()
 
-_region_descriptions = ["Europe", "North_America", "South_America",
-                        "Middle_America_and_Caribbean", "Africa", "Asia",
-                        "Oceania"]
+
+def getDashboardInput():
+    regions = dict()
+    for check in regions_box.children:
+        regions[check.description] = check.value
+
+    preferences = dict()
+    for check in preferences_box1.children:
+        preferences[check.description] = check.value
+
+    for check in preferences_box2.children:
+        preferences[check.description] = check.value
+
+    return DashboardData(budget_widget.value, select_month_widget.value,
+                         max_num_days_widget.value, regions, preferences)
+
+
+def recommend_handler(x):
+    with recommendation_output:
+        recommendation_output.clear_output()
+        output = execute(getDashboardInput())
+        display(Markdown(output))
+
 
 budget_widget = widgets.BoundedIntText(
     value=2000,
@@ -41,6 +67,15 @@ select_month_widget = widgets.Dropdown(
     style=dict(description_width="initial")
 )
 
+_preferences1 = ["nature", "hiking", "beach", "culture", "entertainment"]
+
+_preferences2 = ["citiesArchitecture", "winterSports",
+                 "waterSports", "culinary", "shopping"]
+
+_region_descriptions = ["Europe", "North_America", "South_America",
+                        "Middle_America_and_Caribbean", "Africa", "Asia",
+                        "Oceania"]
+
 regions_box = widgets.HBox(
     [widgets.Checkbox(value=True, description=desc,
                       disabled=False, indent=False)
@@ -65,6 +100,10 @@ query_button = widgets.Button(
     layout=widgets.Layout(position='right')
 )
 
+recommendation_output = widgets.Output()
+
+query_button.on_click(recommend_handler)
+
 dashboard = widgets.VBox([
     widgets.HTML(value="<b>Travel Region Recommender</b>"),
     widgets.Box([widgets.Label("Input your constraints:")]),
@@ -75,51 +114,5 @@ dashboard = widgets.VBox([
     preferences_box1,
     preferences_box2,
     query_button,
+    recommendation_output,
 ])
-
-
-@dataclass
-class DashboardData():
-    budget: int
-    month: str
-    maxDays: int
-    regions: dict()
-    preferences: dict()
-
-
-def getDashboardInput():
-    regions = dict()
-    for check in regions_box.children:
-        regions[check.description] = check.value
-
-    preferences = dict()
-    for check in preferences_box1.children:
-        preferences[check.description] = check.value
-
-    for check in preferences_box2.children:
-        preferences[check.description] = check.value
-
-    return DashboardData(budget_widget.value, select_month_widget.value,
-                         max_num_days_widget.value, regions, preferences)
-
-
-# Example Query
-# BASE <http://cit.tum.de/ressource/travelkg/>
-# PREFIX mapper: <http://www.ontotext.com/mapper/>
-# PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-# PREFIX dbo: <http://dbpedia.org/ontology/>
-# PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
-# PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-# PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-# PREFIX travelregion: <http://cit.tum.de/ressource/travelkg/region/>
-
-# select ?region ?costIRI ?costLabel
-# where {
-#     VALUES (?allowed_region) {
-#         (travelregion:North_Europe)
-#         (travelregion:Central_Europe)
-#     }
-#     ?region dbo:subregion* ?allowed_region .
-#     ?region travelkg:avgCostPerWeek/rdfs:label ?costLabel .
-#     FILTER(?costLabel < 550)
-# } limit 20
