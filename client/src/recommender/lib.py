@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import math
 import sys
 sys.path.append('../graphdb-client/')
 import swagger_client
@@ -15,7 +16,7 @@ def buildQuery(user_input):
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
     PREFIX travelregion: <http://cit.tum.de/ressource/travelkg/region/>
-    SELECT ?region (FLOOR(7*(?budget/?cost)) AS ?numberOfDays) ?monthRating
+    SELECT ?region ?cost (FLOOR(7*(?budget/?cost)) AS ?numberOfDays) ?monthRating
     ?nature ?hiking ?beach ?waterSports ?winterSports ?entertainment ?culture
     ?culinary ?citiesArchitecture ?shopping
     WHERE {{
@@ -76,7 +77,7 @@ def rankRegions(user_input, dataFrame: pd.DataFrame):
             x = int(df_row[preference]) - 3
             score += (x * 2 if selected else x)
 
-        score += calculateDaysScore(int(df_row['numberOfDays']))
+        score += 1 if int(df_row['numberOfDays']) > user_input.maxDays else 0
         score += int(df_row['monthRating']) - 3
 
         scores.append(normalize(score))
@@ -94,31 +95,19 @@ def getMinMaxScore(user_preferences):
     minScore = -2 + 1 + x * -4 + (n-x) * (-2)
     maxScore = 2 + 5 + x * 4 + (n-x) * 2
     return (minScore, maxScore)
+    
 
-
-def calculateDaysScore(n):
-    if n < 3:
-        return 1
-    elif n < 7:
-        return 2
-    elif n < 14:
-        return 3
-    elif n < 21:
-        return 4
-    else:
-        return 5
-
-
-def displayRecommendations(df: pd.DataFrame):
+def displayRecommendations(df: pd.DataFrame, user_input):
     rank = 1
     def pretty(reg): return re.sub(r"[_]+", " ", reg).strip()
     output = "*Recommended Travel Trips:*\n---\n"
-#    output = """*Recommended Travel Trips:*
-# ---
-# """
+
     for _, row in df.iterrows():
+        cost = int(row['cost'])
+        max_stay = min(user_input.maxDays, int(row['numberOfDays']))
+        cost_of_stay = math.ceil(max_stay * cost / 7)
         output += displayRegion(rank, pretty(row['region']),
-                                row['score'], row['numberOfDays'], 400)
+                                row['score'], max_stay, cost_of_stay)
         output += "\n"
         rank += 1
 
@@ -128,7 +117,7 @@ def displayRecommendations(df: pd.DataFrame):
 def displayRegion(rank, region, score, staytime, avgCostPerWeek):
     region = f"""-----
 **Destination {rank}: {region}**
-| Score | Maximum Staytime | Average Cost Per Week |
+| Score | Staytime | Cost of stay |
 |:------|:------------------|:----------------------|
 |{score} % |{staytime} days | {avgCostPerWeek}    |
 """
@@ -149,5 +138,5 @@ def execute(user_input):
     df = readAPIResponse(response)
 
     rankRegions(user_input, df)
-    md_result = displayRecommendations(df.nlargest(10, 'score'))
+    md_result = displayRecommendations(df.nlargest(10, 'score'), user_input)
     return md_result
