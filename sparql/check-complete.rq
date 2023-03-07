@@ -1,0 +1,36 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
+PREFIX travelregion: <http://cit.tum.de/resource/travelkg/region/>
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?region
+WHERE {
+    ?region a dbo:Place .
+    MINUS {
+        ?region travelkg:avgCostPerWeek ?cost ;
+                travelkg:safetyRating ?safety ;
+                travelkg:timeTo75Utility ?time75 ;
+        		travelkg:timeTo25Utility ?time25 ;
+                travelkg:januaryRating/rdfs:label ?jan ;
+                travelkg:februaryRating/rdfs:label ?feb ;
+                travelkg:marchRating/rdfs:label ?mar ;
+                travelkg:aprilRating/rdfs:label ?apr ;
+                travelkg:mayRating/rdfs:label ?may ;
+                travelkg:juneRating/rdfs:label ?jun ;
+                travelkg:julyRating/rdfs:label ?jul ;
+                travelkg:augustRating/rdfs:label ?aug ;
+                travelkg:septemberRating/rdfs:label ?sep ;
+                travelkg:novemberRating/rdfs:label ?nov ;
+                travelkg:decemberRating/rdfs:label ?dec ;
+            	travelkg:natureRating/rdfs:label ?nature ;
+            	travelkg:hikingRating/rdfs:label ?hiking ;
+            	travelkg:beachRating/rdfs:label ?beach ;
+            	travelkg:waterSportsRating/rdfs:label ?waterSports ;
+            	travelkg:winterSportsRating/rdfs:label ?winterSports ;
+            	travelkg:cultureRating/rdfs:label ?culture ;
+            	travelkg:culinaryRating/rdfs:label ?culinary ;
+            	travelkg:entertainmentRating/rdfs:label ?entertainment ;
+                travelkg:shoppingRating/rdfs:label ?shopping ;
+               	travelkg:citiesArchitectureRating/rdfs:label ?citiesArchitecture .
+    }
+}

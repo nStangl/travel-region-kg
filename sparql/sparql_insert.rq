@@ -1,11 +1,11 @@
-BASE <http://cit.tum.de/ressource/travelkg/>
+BASE <http://cit.tum.de/resource/travelkg/>
 PREFIX mapper: <http://www.ontotext.com/mapper/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX travelregion: <http://cit.tum.de/ressource/travelkg/region/>
+PREFIX travelregion: <http://cit.tum.de/resource/travelkg/region/>
 PREFIX schema: <http://schema.org/>
 
 CONSTRUCT {
