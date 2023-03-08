@@ -13,35 +13,35 @@ def buildQuery(user_input):
     )
 
     query = f"""PREFIX dbo:<http://dbpedia.org/ontology/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
-    PREFIX travelregion: <http://cit.tum.de/ressource/travelkg/region/>
-    SELECT ?region ?cost (FLOOR(7*(?budget/?cost)) AS ?numberOfDays) ?monthRating
-    ?nature ?hiking ?beach ?waterSports ?winterSports ?entertainment ?culture
-    ?culinary ?citiesArchitecture ?shopping
-    WHERE {{
-        BIND ({user_input.budget} AS ?budget)
-        VALUES (?allowed_region) {{
-            {allowed_regions}
-        }}
-        ?regionIRI dbo:subregion* ?allowed_region ;
-            travelkg:avgCostPerWeek ?cost .
-        FILTER NOT EXISTS {{ ?any dbo:subregion ?regionIRI }}
-        FILTER(?cost*2 < ?budget)
-        ?regionIRI rdfs:label ?region ;
-            travelkg:{user_input.month}Rating/rdfs:label ?monthRating ;
-            travelkg:natureRating/rdfs:label ?nature ;
-            travelkg:hikingRating/rdfs:label ?hiking ;
-            travelkg:beachRating/rdfs:label ?beach ;
-            travelkg:waterSportsRating/rdfs:label ?waterSports ;
-            travelkg:winterSportsRating/rdfs:label ?winterSports ;
-            travelkg:entertainmentRating/rdfs:label ?entertainment ;
-            travelkg:cultureRating/rdfs:label ?culture ;
-            travelkg:culinaryRating/rdfs:label ?culinary ;
-            travelkg:citiesArchitectureRating/rdfs:label ?citiesArchitecture ;
-            travelkg:shoppingRating/rdfs:label ?shopping .
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
+PREFIX travelregion: <http://cit.tum.de/resource/travelkg/region/>
+SELECT ?region ?cost (FLOOR(7*(?budget/?cost)) AS ?numberOfDays) ?monthRating
+?nature ?hiking ?beach ?waterSports ?winterSports ?entertainment ?culture
+?culinary ?citiesArchitecture ?shopping
+WHERE {{
+    BIND ({user_input.budget} AS ?budget)
+    VALUES (?allowed_region) {{
+        {allowed_regions}
     }}
-    """
+    ?regionIRI dbo:subregion* ?allowed_region ;
+        travelkg:avgCostPerWeek ?cost .
+    FILTER NOT EXISTS {{ ?any dbo:subregion ?regionIRI }}
+    FILTER(?cost*2 < ?budget)
+    ?regionIRI rdfs:label ?region ;
+        travelkg:{user_input.month}Rating/rdfs:label ?monthRating ;
+        travelkg:natureRating/rdfs:label ?nature ;
+        travelkg:hikingRating/rdfs:label ?hiking ;
+        travelkg:beachRating/rdfs:label ?beach ;
+        travelkg:waterSportsRating/rdfs:label ?waterSports ;
+        travelkg:winterSportsRating/rdfs:label ?winterSports ;
+        travelkg:entertainmentRating/rdfs:label ?entertainment ;
+        travelkg:cultureRating/rdfs:label ?culture ;
+        travelkg:culinaryRating/rdfs:label ?culinary ;
+        travelkg:citiesArchitectureRating/rdfs:label ?citiesArchitecture ;
+        travelkg:shoppingRating/rdfs:label ?shopping .
+}}
+"""
     return query
 
 
@@ -92,10 +92,10 @@ def getMinMaxScore(user_preferences):
 
     # preferences are weighted in the score (* 2), min-max scores depend
     # on number of selected preferences
-    minScore = -2 + 1 + x * -4 + (n-x) * (-2)
-    maxScore = 2 + 5 + x * 4 + (n-x) * 2
+    minScore = -2 + 0 + x * -4 + (n-x) * (-2)
+    maxScore = 2 + 1 + x * 4 + (n-x) * 2
     return (minScore, maxScore)
-    
+
 
 def displayRecommendations(df: pd.DataFrame, user_input):
     rank = 1
