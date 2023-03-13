@@ -1,0 +1,35 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX travelkg: <http://cit.tum.de/ontology/travelkg/>
+PREFIX travelregion: <http://cit.tum.de/resource/travelkg/region/>
+
+SELECT ?region ?cost (floor(7 * (?budget / ?cost)) AS ?numberOfDays) ?monthRating
+    ?nature ?hiking ?beach ?waterSports ?winterSports ?entertainment ?culture
+    ?culinary ?citiesArchitecture ?shopping
+WHERE {
+    BIND (2000 AS ?budget)
+    VALUES (?allowed_region) {
+        (travelregion:Europe) (travelregion:North_America)
+        (travelregion:South_America) (travelregion:Middle_America_and_Caribbean)
+        (travelregion:Africa) (travelregion:Asia)
+        (travelregion:Oceania) 
+    }
+    ?regionIRI dbo:subregion* ?allowed_region ;
+               travelkg:avgCostPerWeek ?cost .
+    FILTER NOT EXISTS {
+        ?any dbo:subregion ?regionIRI .
+    }
+    FILTER (?cost < ?budget)
+    ?regionIRI rdfs:label ?region ;
+               travelkg:januaryRating/rdfs:label ?monthRating ;
+               travelkg:natureRating/rdfs:label ?nature ;
+               travelkg:hikingRating/rdfs:label ?hiking ;
+               travelkg:beachRating/rdfs:label ?beach ;
+               travelkg:waterSportsRating/rdfs:label ?waterSports ;
+               travelkg:winterSportsRating/rdfs:label ?winterSports ;
+               travelkg:entertainmentRating/rdfs:label ?entertainment ;
+               travelkg:cultureRating/rdfs:label ?culture ;
+               travelkg:culinaryRating/rdfs:label ?culinary ;
+               travelkg:citiesArchitectureRating/rdfs:label ?citiesArchitecture ;
+               travelkg:shoppingRating/rdfs:label ?shopping .
+}

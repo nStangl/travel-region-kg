@@ -20,6 +20,7 @@ WHERE {
                 travelkg:julyRating/rdfs:label ?jul ;
                 travelkg:augustRating/rdfs:label ?aug ;
                 travelkg:septemberRating/rdfs:label ?sep ;
+                travelkg:octoberRating/rdfs:label ?oct ;
                 travelkg:novemberRating/rdfs:label ?nov ;
                 travelkg:decemberRating/rdfs:label ?dec ;
             	travelkg:natureRating/rdfs:label ?nature ;
